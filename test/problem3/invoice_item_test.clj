@@ -2,20 +2,89 @@
   (:require [clojure.test :refer :all]
             [problem3.invoice-item :refer :all]))
 (deftest test-subtotal-with-discount
-  (is (= 90.0 (subtotal {:precise-quantity 10 :precise-price 10 :discount-rate 10}))))
-
+  (testing
+    (is (= 90.0 (subtotal {:invoice-item/precise-quantity 10
+                           :invoice-item/precise-price    10
+                           :invoice-item/discount-rate    10}))
+        )
+    )
+  )
 (deftest test-subtotal-without-discount
-  (is (= 100.0 (subtotal {:precise-quantity 10 :precise-price 10}))))
+  (testing
+    (is (= 100.0 (subtotal {:invoice-item/precise-quantity 10
+                            :invoice-item/precise-price 10
+                            }
+                           )
+                  )
+               )
+    )
+  )
 
 (deftest test-subtotal-with-default-discount
-  (is (= 95.0 (subtotal {:precise-quantity 10 :precise-price 10 :discount-rate 0}))))
+  (testing
+    (is (= 100.0 (subtotal {:invoice-item/precise-quantity 10
+                            :invoice-item/precise-price 10
+                            :invoice-item/discount-rate 0
+                            }
+                           )
+           )
+        )
+    )
+  )
+(deftest test-subtotal-with-large-quantity
+  (testing
+    (is (= 1000.0 (subtotal {:invoice-item/precise-quantity 100
+                             :invoice-item/precise-price 10
+                             :invoice-item/discount-rate 0
+                             }
+                            )
+           )
+        )
+    )
+  )
+(deftest test-subtotal-with-small-quantity
+  (testing
+    (is (= 0.1 (subtotal {:invoice-item/precise-quantity 0.01
+                          :invoice-item/precise-price 10
+                          :invoice-item/discount-rate 0
+                          }
+                         )
+           )
+        )
+    )
+  )
+(deftest test-subtotal-with-zero-quantity
+  (testing
+    (is (= 0.0 (subtotal {:invoice-item/precise-quantity 0
+                          :invoice-item/precise-price 10
+                          :invoice-item/discount-rate 0
+                          }
+                         )
+           )
+        )
+    )
+  )
+(deftest test-subtotal-with-zero-price
+  (testing
+    (is (= 0.0 (subtotal {:invoice-item/precise-quantity 10
+                          :invoice-item/precise-price 0
+                          :invoice-item/discount-rate 0
+                          }
+                         )
+           )
+        )
+    )
+  )
+(deftest test-subtotal-with-negative-price
+  (testing
+    (is (= -10.0 (subtotal {:invoice-item/precise-quantity 10
+                            :invoice-item/precise-price -1
+                            :invoice-item/discount-rate 0
+                            }
+                           )
+           )
+        )
+    )
+  )
 
-(deftest test-subtotal-with-negative-discount
-  (is (= 110.0 (subtotal {:precise-quantity 10 :precise-price 10 :discount-rate -10}))))
-
-(deftest test-subtotal-with-decimal-quantity
-  (is (= 10.5 (subtotal {:precise-quantity 0.5 :precise-price 21 :discount-rate 10}))))
-
-(deftest a-test
-  (testing "FIXME, I fail."
-    (is (= 0 0))))
+(run-tests 'problem3.invoice-item-test)
